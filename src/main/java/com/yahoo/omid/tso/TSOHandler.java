@@ -327,6 +327,7 @@ public class TSOHandler extends SimpleChannelHandler {
 
             if (reply.committed) {
                 // 2. commit
+            	LOG.warn(" ********************************* commit check");
                 try {
                     long commitTimestamp = timestampOracle.next(toWAL);
                     sharedState.uncommited.commit(commitTimestamp);
