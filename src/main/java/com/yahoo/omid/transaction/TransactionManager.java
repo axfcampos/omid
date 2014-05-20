@@ -44,7 +44,7 @@ import com.yahoo.omid.client.TSOClient;
  * 
  */
 public class TransactionManager {
-    private static final Log LOG = LogFactory.getLog(TSOClient.class);
+    //private static final Log LOG = LogFactory.getLog(TSOClient.class);
 
     static TSOClient tsoclient = null;
     private static Object lock = new Object();
