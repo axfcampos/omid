@@ -16,19 +16,18 @@
 
 package com.yahoo.omid.tso;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.yahoo.omid.replication.SharedMessageBuffer;
 import com.yahoo.omid.tso.persistence.LoggerAsyncCallback.AddRecordCallback;
 import com.yahoo.omid.tso.persistence.LoggerException.Code;
 import com.yahoo.omid.tso.persistence.StateLogger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import pt.inescid.gsd.QueueScheduler;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -178,7 +177,14 @@ public class TSOState {
            logger.shutdown();
        }
    }
-   
+
+    /**
+     * QueueScheduler inesc-id
+     */
+
+    QueueScheduler qs;
+
+
    /*
     * WAL related pointers
     */
@@ -193,6 +199,7 @@ public class TSOState {
        this.largestDeletedTimestamp = this.previousLargestDeletedTimestamp;
        this.uncommited = new Uncommited(timestampOracle.first());
        this.logger = logger;
+       this.qs = new QueueScheduler();
    }
    
    public TSOState(TimestampOracle timestampOracle) {

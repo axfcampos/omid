@@ -16,6 +16,19 @@
 
 package com.yahoo.omid.tso;
 
+import com.yahoo.omid.replication.SharedMessageBuffer.ReadingBuffer;
+import com.yahoo.omid.tso.messages.*;
+import com.yahoo.omid.tso.persistence.LoggerAsyncCallback.AddRecordCallback;
+import com.yahoo.omid.tso.persistence.LoggerException;
+import com.yahoo.omid.tso.persistence.LoggerException.Code;
+import com.yahoo.omid.tso.persistence.LoggerProtocol;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.group.ChannelGroup;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -23,43 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
-
-import com.yahoo.omid.replication.SharedMessageBuffer.ReadingBuffer;
-import com.yahoo.omid.tso.messages.AbortRequest;
-import com.yahoo.omid.tso.messages.AbortedTransactionReport;
-import com.yahoo.omid.tso.messages.CommitQueryRequest;
-import com.yahoo.omid.tso.messages.CommitQueryResponse;
-import com.yahoo.omid.tso.messages.CommitRequest;
-import com.yahoo.omid.tso.messages.CommitResponse;
-import com.yahoo.omid.tso.messages.FullAbortRequest;
-import com.yahoo.omid.tso.messages.LargestDeletedTimestampReport;
-import com.yahoo.omid.tso.messages.TimestampRequest;
-import com.yahoo.omid.tso.messages.TimestampResponse;
-import com.yahoo.omid.tso.persistence.LoggerAsyncCallback.AddRecordCallback;
-import com.yahoo.omid.tso.persistence.LoggerException;
-import com.yahoo.omid.tso.persistence.LoggerException.Code;
-import com.yahoo.omid.tso.persistence.LoggerProtocol;
 
 /**
  * ChannelHandler for the TSO Server
@@ -327,7 +305,6 @@ public class TSOHandler extends SimpleChannelHandler {
 
             if (reply.committed) {
                 // 2. commit
-            	LOG.warn("****************************************** hello");
                 try {
                     long commitTimestamp = timestampOracle.next(toWAL);
                     sharedState.uncommited.commit(commitTimestamp);
@@ -374,6 +351,19 @@ public class TSOHandler extends SimpleChannelHandler {
                         synchronized (sharedMsgBufLock) {
                             queueCommit(msg.startTimestamp, commitTimestamp);
                         }
+
+
+                        /**
+                         * inesc-id
+                         * insert transaction into scheduler
+                         */
+                        //TODO make a test where a workload inserts several transactions
+                        //We log how much time the commit took and much of its time was spent here
+                        //After this is well set, check the hbase code to define geo-replication and how will it connect
+                        //here.
+                        sharedState.qs.insertTransaction(msg.startTimestamp, commitTimestamp, msg.rows);
+
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

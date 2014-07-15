@@ -16,18 +16,22 @@
 
 package com.yahoo.omid.tso;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.MurmurHash;
 import org.jboss.netty.buffer.ChannelBuffer;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class RowKey {
     private byte[] rowId;
     private byte[] tableId;
     private int hash = 0;
+
+    private double value;
+    private long time;
+    private int sequence;
 
     public RowKey() {
         rowId = new byte[0];
@@ -37,6 +41,16 @@ public class RowKey {
     public RowKey(byte[] r, byte[] t) {
         rowId = r;
         tableId = t;
+    }
+
+    public void addConstraints(double value, long time, int sequence){
+        this.value = value;
+        this.time = time;
+        this.sequence = sequence;
+    }
+
+    public int getSequence(){
+       return this.sequence;
     }
 
     public byte[] getTable() {
@@ -54,12 +68,14 @@ public class RowKey {
     public static RowKey readObject(ChannelBuffer aInputStream) {
         RowKey rk = new RowKey(null, null);
         rk.hash = aInputStream.readInt();
+        rk.sequence = aInputStream.readInt();
         return rk;
     }
 
     public void writeObject(DataOutputStream aOutputStream) throws IOException {
         hashCode();
         aOutputStream.writeInt(hash);
+        aOutputStream.writeInt(sequence);
     }
 
     public boolean equals(Object obj) {
@@ -80,5 +96,9 @@ public class RowKey {
         System.arraycopy(rowId, 0, key, tableId.length, rowId.length);
         hash = MurmurHash.getInstance().hash(key, 0, key.length, 0xdeadbeef);
         return hash;
+    }
+
+    public double getValue() {
+        return value;
     }
 }
