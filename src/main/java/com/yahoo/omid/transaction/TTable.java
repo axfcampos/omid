@@ -215,6 +215,29 @@ public class TTable {
     }
 
     /**
+     * inesc-id
+     * method to add type 1 constaints (0 - table, 1 - rows, 2 - cf, 3 - columns)
+     * The constraints cover all values of in the column and column families of the specified row
+     * For each row there will be a constraint vector
+     * type 0, 2, 3 are yet to be implemented
+     *
+     * //TODO implement some sort of protection to avoid shadow columns/cf values to be accessed
+     * As in they can only be changed through the correct methods (regular transactional put shouldnt interfere)
+     * maybe maintain a cached map that echoes the last used constraints hash(row) -> constraint
+     * to reduce comm with hbase
+     *
+     * All puts check the map before insert. If not in the map, a GET is issued to fetch that rows constraint.
+     * Its placed on the map.
+     * putRowConstraint also updates the map.
+     *
+     * The map should be set to have a certain limit of entries. GC should be LRU, or random
+     *
+     */
+    public void putRowConstraint(byte[] row, double value, long time, int sequence){
+
+    }
+
+    /**
      * Returns a scanner on the current table as specified by the {@link Scan}
      * object. Note that the passed {@link Scan}'s start row and caching
      * properties maybe changed.
