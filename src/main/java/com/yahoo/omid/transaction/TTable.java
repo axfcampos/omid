@@ -235,6 +235,11 @@ public class TTable {
      */
     public void putRowConstraint(byte[] row, double value, long time, int sequence){
 
+        //Make put object
+        Put put = new Put(row);
+
+        //put it
+
     }
 
     /**

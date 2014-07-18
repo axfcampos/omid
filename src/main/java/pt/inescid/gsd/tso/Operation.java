@@ -1,8 +1,8 @@
-package pt.inescid.gsd;
+package pt.inescid.gsd.tso;
 
 import com.yahoo.omid.tso.RowKey;
-import pt.inescid.gsd.k.K;
-import pt.inescid.gsd.k.K_Seq;
+import pt.inescid.gsd.tso.k.K;
+import pt.inescid.gsd.tso.k.K_Seq;
 
 public class Operation implements Comparable<Operation> {
 

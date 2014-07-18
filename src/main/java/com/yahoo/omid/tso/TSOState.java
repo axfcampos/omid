@@ -22,7 +22,7 @@ import com.yahoo.omid.tso.persistence.LoggerException.Code;
 import com.yahoo.omid.tso.persistence.StateLogger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import pt.inescid.gsd.QueueScheduler;
+import pt.inescid.gsd.tso.QueueScheduler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

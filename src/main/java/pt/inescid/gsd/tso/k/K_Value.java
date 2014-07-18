@@ -1,4 +1,4 @@
-package pt.inescid.gsd.k;
+package pt.inescid.gsd.tso.k;
 
 
 public class K_Value extends K {

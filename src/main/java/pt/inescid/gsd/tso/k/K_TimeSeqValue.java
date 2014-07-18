@@ -1,9 +1,11 @@
-package pt.inescid.gsd.k;
+package pt.inescid.gsd.tso.k;
 
 /**
  * Created by axfcampos on 07/06/14.
  */
-public class K_Time extends K {
+public class K_TimeSeqValue extends K {
+
+
     @Override
     public void reset() {
 
@@ -13,7 +15,6 @@ public class K_Time extends K {
     public String toString() {
         return null;
     }
-
 
 
     @Override

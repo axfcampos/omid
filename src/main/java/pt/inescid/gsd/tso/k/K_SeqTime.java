@@ -1,6 +1,4 @@
-package pt.inescid.gsd.k;
-
-import pt.inescid.gsd.k.K;
+package pt.inescid.gsd.tso.k;
 
 /**
  * Created by axfcampos on 07/06/14.

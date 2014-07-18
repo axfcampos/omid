@@ -1,4 +1,4 @@
-package pt.inescid.gsd;
+package pt.inescid.gsd.tso;
 
 import com.yahoo.omid.tso.RowKey;
 
