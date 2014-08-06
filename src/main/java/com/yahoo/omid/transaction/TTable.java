@@ -205,8 +205,10 @@ public class TTable {
         for (List<KeyValue> kvl : kvs.values()) {
             for (KeyValue kv : kvl) {
                 tsput.add(new KeyValue(kv.getRow(), kv.getFamily(), kv.getQualifier(), startTimestamp, kv.getValue()));
+                getRowConstraint(kv.getRow()); //inesc-id //TODO the cache map
             }
         }
+
 
         // should add the table as well
         transactionState.addRow(new RowKeyFamily(tsput.getRow(), getTableName(), tsput.getFamilyMap()));
@@ -233,14 +235,28 @@ public class TTable {
      * The map should be set to have a certain limit of entries. GC should be LRU, or random
      *
      */
-    public void putRowConstraint(byte[] row, double value, long time, int sequence){
+    public void putRowConstraint(byte[] row, double value, long time, int sequence) throws IOException {
 
         //Make put object
-        Put put = new Put(row);
+        //TODO too much space, should and can be shorter
+        String val = value + ":" + time + ":" + sequence;
+
+        Put cput = new Put(row);
+        cput.add(new byte[]{0x42}, new byte[]{0x24}, Bytes.toBytes(val));
 
         //put it
+        table.put(cput);
 
     }
+
+    public Result getRowConstraint(byte[] row) throws IOException {
+
+        Get cget = new Get(row);
+        cget.addColumn(new byte[]{0x42}, new byte[]{0x24});
+
+        return table.get(cget);
+    }
+
 
     /**
      * Returns a scanner on the current table as specified by the {@link Scan}

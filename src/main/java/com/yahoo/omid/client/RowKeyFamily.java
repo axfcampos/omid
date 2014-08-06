@@ -16,13 +16,12 @@
 
 package com.yahoo.omid.client;
 
+import com.yahoo.omid.tso.RowKey;
+import org.apache.hadoop.hbase.KeyValue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.hadoop.hbase.KeyValue;
-
-import com.yahoo.omid.tso.RowKey;
 
 public class RowKeyFamily extends RowKey {
    
@@ -53,5 +52,5 @@ public class RowKeyFamily extends RowKey {
       }
       kvs.add(kv);
    }
-   
+
 }
